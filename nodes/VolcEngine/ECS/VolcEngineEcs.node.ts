@@ -7,8 +7,8 @@ import type {
 import { NodeConnectionType } from 'n8n-workflow';
 
 import { volcEngineApiRequest } from '../GenericFunctions';
-import { imageResource, imageOperation, copyImageFields, describeTasksFields } from './ImageDescription';
-import type { ICopyImageRequest, ICopyImageResponse, IDescribeTasksRequest, IDescribeTasksResponse, ITaskInfo } from '../types';
+import { imageResource, imageOperation, copyImageFields, describeTasksFields, detectImageFields } from './ImageDescription';
+import type { ICopyImageRequest, ICopyImageResponse, IDescribeTasksRequest, IDescribeTasksResponse, ITaskInfo, IDetectImageRequest, IDetectImageResponse } from '../types';
 
 function parseAndValidateIds(idString: string, maxCount: number, idName: string): string[] {
 	const ids = idString.split(',').map(id => id.trim()).filter(id => id);
@@ -53,6 +53,7 @@ export class VolcEngineEcs implements INodeType {
 			imageOperation,
 			...copyImageFields,
 			...describeTasksFields,
+			...detectImageFields,
 		],
 	};
 
@@ -170,6 +171,35 @@ export class VolcEngineEcs implements INodeType {
 							})),
 							totalTasks: responseData.Result.Tasks.length,
 							hasMore: !!responseData.Result.NextToken,
+						};
+
+						returnData.push({
+							json: result,
+							pairedItem: { item: i },
+						});
+					} else if (operation === 'detectImage') {
+						// 获取参数
+						const imageId = this.getNodeParameter('imageId', i) as string;
+
+						// 构建请求参数
+						const requestBody: Partial<IDetectImageRequest> = {
+							ImageId: imageId,
+						};
+
+						// 调用API
+						responseData = await volcEngineApiRequest.call(
+							this,
+							'ecs',
+							'POST',
+							'DetectImage',
+							requestBody,
+						) as IDetectImageResponse;
+
+						// 格式化返回数据
+						const result = {
+							success: true,
+							requestId: responseData.ResponseMetadata.RequestId,
+							message: `镜像检测任务已发起，请使用DescribeImages查询结果。`,
 						};
 
 						returnData.push({

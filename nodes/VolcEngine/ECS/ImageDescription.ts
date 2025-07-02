@@ -25,6 +25,12 @@ export const imageOperation: INodeProperties = {
 			action: 'Query task progress',
 			description: 'Query the progress of asynchronous tasks',
 		},
+		{
+			name: 'Detect Image',
+			value: 'detectImage',
+			action: 'Detect an image',
+			description: 'Detect an image for compliance and security',
+		},
 	],
 	default: 'copy',
 };
@@ -210,6 +216,25 @@ export const describeTasksFields: INodeProperties[] = [
 		default: '',
 		placeholder: '3tiegs1y963vj0******',
 		description: 'Pagination token for retrieving the next page of results',
+	},
+];
+
+// DetectImage操作字段配置
+export const detectImageFields: INodeProperties[] = [
+	{
+		displayName: 'Image ID',
+		name: 'imageId',
+		type: 'string',
+		required: true,
+		displayOptions: {
+			show: {
+				resource: ['image'],
+				operation: ['detectImage'],
+			},
+		},
+		default: '',
+		placeholder: 'image-xxxxxxxxxxxxxx',
+		description: 'The ID of the image to detect.',
 	},
 ];
 

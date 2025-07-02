@@ -91,6 +91,25 @@ export interface ICopyImageResponse {
 	};
 }
 
+// DetectImage请求接口
+export interface IDetectImageRequest {
+	Action: 'DetectImage';
+	Version: '2020-04-01';
+	ImageId: string;
+}
+
+// DetectImage响应接口
+export interface IDetectImageResponse {
+	ResponseMetadata: {
+		RequestId: string;
+		Action: string;
+		Version: string;
+		Service: string;
+		Region: string;
+	};
+	Result: {};
+}
+
 // DescribeTasks请求接口
 export interface IDescribeTasksRequest {
 	Action: 'DescribeTasks';
